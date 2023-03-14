@@ -1,16 +1,17 @@
-export default function write() {
+import type { NextPage } from "next";
+import Button from "../../components/button";
+import Layout from "../../components/layout";
+import TextArea from "../../components/textarea";
+
+const Write: NextPage = () => {
   return (
-    <div className="py-16 px-8">
-      <textarea
-        className="w-full rounded-md shadow-md hover:border-orange-500 focus:border-orange-500"
-        rows={5}
-        placeholder="write here..."
-      />
-      <div className="flex items-center justify-center">
-        <button className="p-2 mt-4 rounded-md bg-orange-500 w-3/4 text-gray-50 hover:bg-orange-600 hover:ring-2 ring-offset-1 ring-orange-600">
-          Submit
-        </button>
-      </div>
-    </div>
+    <Layout canGoBack title="Write Post">
+      <form className="p-4 space-y-4">
+        <TextArea required placeholder="Ask a question!" />
+        <Button text="Submit" />
+      </form>
+    </Layout>
   );
-}
+};
+
+export default Write;
