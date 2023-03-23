@@ -1,6 +1,7 @@
 import client from "@/libs/server/client";
 import smtpTransport from "@/libs/server/email";
 import withHandler, { ResponseType } from "@/libs/server/withHandler";
+import { withApiSession } from "@/libs/server/withSession";
 import { NextApiRequest, NextApiResponse } from "next";
 import twilio from "twilio";
 
@@ -11,7 +12,7 @@ async function handler(
   res: NextApiResponse<ResponseType>
 ) {
   const { phone, email } = req.body;
-  const user = phone ? { phone: +phone } : email ? { email } : null;
+  const user = phone ? { phone } : email ? { email } : null;
   if (!user) return res.status(400).json({ ok: false });
   const payload = Math.floor(10000 + Math.random() * 900000) + "";
   const tokens = await client.token.create({
@@ -31,12 +32,12 @@ async function handler(
     },
   });
   if (phone) {
-    const message = await twilioClient.messages.create({
-      messagingServiceSid: process.env.TWILIO_MSID,
-      to: process.env.MY_PHONE!,
-      body: `Your login token is ${payload}`,
-    });
-    console.log(message);
+    // const message = await twilioClient.messages.create({
+    //   messagingServiceSid: process.env.TWILIO_MSID,
+    //   to: process.env.MY_PHONE!,
+    //   body: `Your login token is ${payload}`,
+    // });
+    // console.log(message);
   }
   if (email) {
     const mailOptions = {
@@ -61,4 +62,10 @@ async function handler(
     ok: true,
   });
 }
-export default withHandler("POST", handler);
+export default withApiSession(
+  withHandler({
+    methods: ["POST"],
+    handler,
+    isprivate: false,
+  })
+);
